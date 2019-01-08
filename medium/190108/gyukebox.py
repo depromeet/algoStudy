@@ -8,10 +8,10 @@ def minimumLoss(price):
     for i in range(num_prices):
         prices_dict[price[i]] = i
     sorted_price = sorted(price)
-    for i in range(num_prices - 1):
+    for i in range(1, num_prices):
         if prices_dict[sorted_price[i]] < prices_dict[sorted_price[i - 1]]:
             difference = sorted_price[i] - sorted_price[i - 1]
-            if difference < min_loss and difference > 0:
+            if difference < min_loss:
                 min_loss = difference
     return min_loss
 
