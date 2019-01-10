@@ -6,25 +6,33 @@ vector<string> split_string(string);
 
 // Complete the missingNumbers function below.
 vector<int> missingNumbers(vector<int> arr, vector<int> brr) {
+    // declare vector for return value
     vector<int> missArr;
+    // create an array to store the values
+    int numArr[10001] = {0};
+    // create variable min_index to find the minimum value in brr
+    int min_index = 10000;
 
-    int arr_count = 0;
-    for (int brr_count = 0, n = brr.size(); brr_count < n; brr_count++) {
-        // if number matches in two vectors,
-        if (arr[arr_count] == brr[brr_count]) {
-            // simply pass through
-            arr_count++;
+    // update counts for each element in brr to numArr
+    for (int i = 0, n = brr.size(); i < n; i++) {
+        // update brr_min value
+        if (brr[i] <= min_index) {
+            min_index = brr[i];
         }
-        // if number is missing, do not increment arr_count so that the count can iterate in order
-        else {
-            // add number to missArr (skip if already exists in missArr)
-            if (find(missArr.begin(), missArr.end(), brr[brr_count]) == missArr.end()) {
-                missArr.push_back(brr[brr_count]);
-            } 
+        numArr[brr[i]] += 1;
+    }
+
+    // subtract counts for exising elements in arr from numArr
+    for (int i = 0, n = arr.size(); i < n; i++) {
+        numArr[arr[i]] -= 1;
+    }
+    
+    // find missing numbers (left in numArr) and push to missArr (in ascending order)
+    for (int num = min_index, end = min_index + 100; num < end; num++) {
+        if (numArr[num] != 0) {
+            missArr.push_back(num);
         }
     }
-    // sort missArr in ascending order
-    sort(missArr.begin(), missArr.end()); 
     return missArr;
 }
 
