@@ -22,7 +22,7 @@ def start():
             else:
                 print(*ans)
         elif k == 1:
-            print(' '.join(map(str, [n] + [t for t in range(1, n)])))
+            print(n, *list(range(1, n)))
         else:
             print('-1')
 
