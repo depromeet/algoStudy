@@ -32,6 +32,33 @@ void bfs(int begin, const vector<int> v[], vector<int>& par) {
         }
     }
 }
+void dfs(
+    int current, int prev, vector<int> v[], vector<int> &par,
+    vector<bool> &stacked, vector<set<int>> &gp,
+    int k, int& gtrue, int &passed)
+{
+    stacked[current] = true;
+    int temp = gtrue;
+    // 원래 par[currnet] = prev; 였고
+    // 지긍은 par[prev] = current;, par[current] = -1;
+    if (gp[current].find(prev) != gp[current].end()) {
+        // 원래 그래프가 정상 그래프 였으면
+        gtrue--;
+    } 
+    if (gp[prev].find(current) != gp[prev].end()) {
+        // 새로 생긴 그래프가 정상 그래프면
+        gtrue++;
+    }
+
+    if (gtrue >= k) passed++;
+    for(int i = 0 ;i < v[current].size();i++) {
+        int next = v[current][i];
+        if (stacked[next] == false) {
+            dfs(next, current, v, par, stacked, gp, k, gtrue, passed);
+        }
+    }
+    gtrue = temp;
+}
 string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>> guesses) {
     /*
      * Write your code here.
@@ -51,8 +78,8 @@ string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>>
         }
     }
     vector<set<int>> gp(n + 100);
-    int correct = 0;
-    int gtrue= 0;
+    int passed = 0;
+    int gtrue = 0;
     for(int i = 0 ;i < guesses.size();i++) {
         int u = guesses[i][0];
         int v = guesses[i][1];
@@ -62,46 +89,22 @@ string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>>
         }
     }
     if (gtrue >= k) {
-        correct++;
+        passed++;
     }
-    for(int i = 2; i <= n;i++) {
-        if (gp[i].end() != gp[i].find(par[i])) {
-            // 원래 추측이 맞았던 경우
-            gtrue--;
-        }
-        par[i] = -1;
-        vector<bool> chk(n + 100, false);
-        chk[i] = true;
-        queue<int> q;
-        q.push(i);
-        while(!q.empty()) {
-            int c = q.front();
-            q.pop();
-            if (gp[c].find(par[c]) != gp[c].end()) {
-                // 새로 생긴 추측이 맞는 경우
-                gtrue++;
-            }
-            for(int j = 0;j < v[c].size();j++) {
-                int nxt = v[c][j];
-                if (chk[nxt] == false && par[nxt] != c) {
-                    if (gp[nxt].find(par[nxt]) != gp[nxt].end()) {
-                        // 원래 추측이 맞는 상태 였을 경우
-                        gtrue--;
-                    }
-                    par[nxt] = c;
-                    q.push(nxt);
-                }
-                chk[nxt] = true;
+    vector<bool> stacked(n + 100, false);
+    stacked[1] = true;
+    for(int j = 1 ;j <= n;j++) {
+        for (int i = 0; i < v[j].size(); i++) {
+            if (stacked[v[j][i]] == false) {
+                dfs(v[j][i], 1, v, par, stacked, gp, k, gtrue, passed);
             }
         }
-        if (gtrue >= k) {
-            correct++;
-        }
     }
-    int g = gcd (correct, n);
+    int prev_root = 1;
+    int g = gcd (passed, n);
     stringstream ss;
-    ss << correct/g << "/" << n/g;
-    cout << correct/g << "/" << n/g << endl;
+    ss << passed/g << "/" << n/g;
+    cout << passed/g << "/" << n/g << endl;
     return ss.str();
 }
 
