@@ -50,13 +50,13 @@ string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>>
             bfs(i, v, par);
         }
     }
-    vector<vector<int>> gp(n + 100);
+    vector<set<int>> gp(n + 100);
     int correct = 0;
     int gtrue= 0;
     for(int i = 0 ;i < guesses.size();i++) {
         int u = guesses[i][0];
         int v = guesses[i][1];
-        gp[v].push_back(u);
+        gp[v].insert(u);
         if (par[v] == u) {
             gtrue++;
         }
@@ -65,7 +65,7 @@ string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>>
         correct++;
     }
     for(int i = 2; i <= n;i++) {
-        if (par[i] == gp[i].size()) {
+        if (gp[i].end() != gp[i].find(par[i])) {
             // 원래 추측이 맞았던 경우
             gtrue--;
         }
@@ -77,14 +77,14 @@ string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>>
         while(!q.empty()) {
             int c = q.front();
             q.pop();
-            if (par[c] == gp[c].size()) {
+            if (gp[c].find(par[c]) != gp[c].end()) {
                 // 새로 생긴 추측이 맞는 경우
                 gtrue++;
             }
             for(int j = 0;j < v[c].size();j++) {
                 int nxt = v[c][j];
                 if (chk[nxt] == false && par[nxt] != c) {
-                    if (par[nxt] == gp[nxt].size()) {
+                    if (gp[nxt].find(par[nxt]) != gp[nxt].end()) {
                         // 원래 추측이 맞는 상태 였을 경우
                         gtrue--;
                     }
@@ -94,19 +94,9 @@ string storyOfATree(int n, vector<vector<int>> edges, int k, vector<vector<int>>
                 chk[nxt] = true;
             }
         }
-        int test = 0;
-        for(int i = 0 ;i < guesses.size();i++) {
-            int a = guesses[i][0];
-            int b = guesses[i][1];
-            // for(int j=0;j<gp[b].size();j++) {
-            //     if (gp[b][j] == par[b]) test++;
-            // }
-            if (par[b] == a) test++;
+        if (gtrue >= k) {
+            correct++;
         }
-        if (test >= k) correct++;
-        // if (gtrue >= k) {
-            // correct++;
-        // }
     }
     int g = gcd (correct, n);
     stringstream ss;
