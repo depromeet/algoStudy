@@ -20,33 +20,48 @@ class Result {
      */
 
     public static String gamingArray(List<Integer> arr) {
-        int answer = 0;
+        int max = 0;
+        int count = 0;
 
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (int i = 0; i < arr.size(); i++)
-            map.put(arr.get(i), i);
-
-        Collections.sort(arr);
-
-        int idx = arr.size() - 1;
-
-        int sortedI = arr.size() - 1;
-        while (sortedI >= 0 && idx >= 0) {
-            int maxI = map.get(arr.get(sortedI));
-            if (maxI <= idx) {
-                idx = maxI;
-                answer = (answer + 1) % 2;
-
-                if (idx == 0) break;
+        for (int i : arr) {
+            if (i > max) {
+                max = i;
+                count++;
             }
-            sortedI--;
         }
 
-        if (answer == 0) return "ANDY";
-        else return "BOB";
-
+        return count % 2 == 0 ? "ANDY" : "BOB";
     }
+
+//    public static String gamingArray(List<Integer> arr) {
+//        int answer = 0;
+//
+//        Map<Integer, Integer> map = new HashMap<>();
+//
+//        for (int i = 0; i < arr.size(); i++)
+//            map.put(arr.get(i), i);
+//
+//        Collections.sort(arr);
+//
+//        int idx = arr.size() - 1;
+//
+//        int sortedI = arr.size() - 1;
+//        while (sortedI >= 0 && idx >= 0) {
+//            int maxI = map.get(arr.get(sortedI));
+//            if (maxI <= idx) {
+//                idx = maxI;
+//                answer = (answer + 1) % 2;
+//
+//                if (idx == 0) break;
+//            }
+//            sortedI--;
+//        }
+//
+//        if (answer == 0) return "ANDY";
+//        else return "BOB";
+//
+//    }
+
 //    public static String gamingArray(List<Integer> arr) {
 //        int answer = 0;
 //        int idx = arr.size() - 1;
