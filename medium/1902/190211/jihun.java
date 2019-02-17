@@ -8,54 +8,54 @@ import java.util.regex.*;
 
 public class Solution {
     static int n;
-    static int answer = -1;
-    static int[][] map;
+    static boolean[][] answer = new boolean[1001][1024];
+    static HashMap<Integer, ArrayList<BCost>> map = new HashMap<>();
+
+    static class BCost {
+        int b;
+        int cost;
+
+        BCost(int b, int cost) {
+            this.b = b;
+            this.cost = cost;
+        }
+    }
 
     // Complete the beautifulPath function below.
     static int beautifulPath(int[][] edges, int A, int B) {
+        for (int[] e : edges) {
+            int a = e[0];
+            int b = e[1];
+            int cost = e[2];
 
-        for (int i = 0 ; i < edges.length; i++) {
-            if (map[edges[i][0]][edges[i][1]] == 0 || edges[i][2] < map[edges[i][0]][edges[i][1]]) {
-                map[edges[i][0]][edges[i][1]] = edges[i][2];
-                map[edges[i][1]][edges[i][0]] = edges[i][2];
-            }
+            ArrayList<BCost> bCosts = map.getOrDefault(a, new ArrayList<>());
+            bCosts.add(new BCost(b, cost));
+            map.put(a, bCosts);
+
+            bCosts = map.getOrDefault(b, new ArrayList<>());
+            bCosts.add(new BCost(a, cost));
+            map.put(b, bCosts);
         }
 
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = 1; j < n + 1; j++) {
-                System.out.printf("%3d ", map[i][j]);
-            }
-            System.out.println();
+        dfs(A, 0);
+
+        for (int i = 1; i < 1024; i++) {
+            if (answer[B][i]) return i;
         }
 
-        getMinimalPath(new HashSet<Integer>(), 0, A, B);
-
-        return answer;
+        return -1;
     }
 
-    static void getMinimalPath(Set<Integer> set, int path, int src, int dst) {
-        if (set.contains(src)) return;
-        if (answer != -1 && path >= answer) return;
-        if (src == dst) {
-            answer = path;
-            return;
-        }
+    static void dfs(int a, int cost) {
+        answer[a][cost] = true;
 
-        Set<Integer> newSet = new HashSet<>(set);
-        newSet.add(src);
-
-        ArrayList<Integer> a = new ArrayList<>();
-        for (int i = 1; i < n + 1; i++) {
-            if (map[src][i] > 0 && !set.contains(i)) {
-                a.add(i);
+        ArrayList<BCost> bCosts = map.get(a);
+        if (bCosts == null) return;
+        for (BCost bc : bCosts) {
+            if (!answer[bc.b][cost | bc.cost]) {
+                dfs(bc.b, cost | bc.cost);
             }
         }
-
-        Collections.sort(a);
-
-        for (int val : a)
-            getMinimalPath(newSet, path | map[src][val], val, dst);
-
     }
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -66,7 +66,6 @@ public class Solution {
         String[] nm = scanner.nextLine().split(" ");
 
         n = Integer.parseInt(nm[0]);
-        map = new int[n + 1][n + 1];
 
         int m = Integer.parseInt(nm[1]);
 
