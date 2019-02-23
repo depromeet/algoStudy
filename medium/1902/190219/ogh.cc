@@ -6,8 +6,77 @@ using namespace std;
 vector<string> split_string(string);
 
 // Complete the substringDiff function below.
-int substringDiff(int k, string s1, string s2) {
-    
+#define point pair<int, int>
+#define mp make_pair
+int substringDiff(int k_cost, string s1, string s2) {
+    if (s1.size() > s2.size()) {
+        swap(s1, s2);
+    }
+    bool is_cs[s1.size() + 1][s2.size() + 1] {};
+    bool chk[s1.size() + 1][s2.size() + 1] {};
+    vector<vector<point>> v; // cs 리스트 
+    vector<point> vstart; // cs 스타팅 포인트 
+    // 일단 lcs 찾음
+    for(int i = 0 ;i < s1.size();i++) {
+        for(int j = 0; j < s2.size();j++) {
+            if (chk[i][j] == false) {
+                vector<point> temp;
+                int begin = -1;
+                int k = 0;
+                for( ; i + k < s1.size() && j + k <s2.size();k++) {
+                    int ci = k + i;
+                    int cj = k + j;
+                    chk[ci][cj] = true;
+                    if (s1[ci] == s2[cj]) {
+                        is_cs[ci + 1][cj + 1] = true;
+                        if (is_cs[ci][cj] == false) {
+                            // cs 시작점 이면
+                            begin = k;
+                        }
+                    } else if (is_cs[ci][cj]) {
+                        // cs 끝점
+                        temp.push_back(mp(begin, k-1));
+                    }
+                }
+                if (begin != -1 &&
+                    (temp.empty() || temp[temp.size() - 1].first != begin)) {
+                    temp.push_back(mp(begin, k - 1));
+                }
+                vstart.push_back(mp(i,j));
+                v.push_back(temp);
+            } else {
+                // n^2 맞추기 위한 최적화
+                break;
+            }
+        }
+    }
+    int ret = 0;
+    for(int i = 0 ;i < v.size();i++) {
+        int gap[v[i].size() + 1] {};
+        int start = 0;
+        if (!v[i].empty()) {
+            int len = v[i][0].second - v[i][0].first + 1;
+            len += k_cost;
+            len = min (len, (int)s1.size() - vstart[i].first);
+            ret = max(ret, len);
+        }
+        for(int j = 1 ;j < v[i].size();j++) {
+            // cs 두개 사이의 거리 재고 
+            gap[j] = gap[j-1] + v[i][j].first - v[i][j-1].second - 1;
+            int cost = gap[j] - gap[start];
+            while (start < j && cost > k_cost) {
+                cost -= (gap[start + 1] - gap[start]);
+                start++;
+            }
+            // 현재 cs까지의 총 길이 + k를 계산 함. 
+            long unsigned len = v[i][j].second - v[i][start].first + 1;
+            len += (k_cost - cost);
+            len = min(s1.size() - vstart[i].first, len);
+            ret = max((long unsigned)ret, len);
+        }
+    }
+
+    return ret;
 }
 
 int main()
