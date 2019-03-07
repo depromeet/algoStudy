@@ -6,6 +6,7 @@ vector<string> split_string(string);
 
 // Complete the getMinimumCost function below.
 int getMinimumCost(int k, vector<int> c) {
+    // 그냥 문제에 써 있는 대로 greedy 하게 풀면 됨. 
     sort(c.begin(), c.end());
     int dap = 0 ;
     int loop = 1;
