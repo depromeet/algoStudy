@@ -36,6 +36,8 @@ vector<string> bomberMan(int n, vector<string> grid) {
     vector<string> grid_list;
     string prev_grid = serialize_grid(grid);
     int rep_begin = -1;
+     
+     // 반복되는 그리드 있을 때 까지 찾음. (그리디 알고리즘) 
     while (true)
     {
         grid_list.push_back(prev_grid);
