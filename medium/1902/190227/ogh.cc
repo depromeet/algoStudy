@@ -12,6 +12,7 @@ bool is_in_bound(int x, int y, int n) {
 #define mp make_pair
 
 void solve(vector<vector<int>> &arr, int dx, int dy, int n) {
+    // 단순 bfs로 경로 있는지 확인 하면 끝. 
     int mx[4] {1, 1, -1, -1};
     int my[4] {1, -1, 1, -1};
     bool chk[n+1][n+1] ;
